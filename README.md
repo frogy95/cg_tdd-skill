@@ -1,4 +1,4 @@
-# choiji-guide-3
+# choiji-guide : tdd-skill
 
 AI 에이전트가 TDD 파이프라인을 자동으로 실행하는 **AI 네이티브 개발 프로세스** 프로젝트.
 
