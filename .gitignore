@@ -1,0 +1,24 @@
+# 의존성
+node_modules/
+
+# 빌드 산출물
+dist/
+*.js.map
+
+# 환경 변수
+.env
+.env.local
+.env.*.local
+
+# 테스트 캐시
+coverage/
+.jest-cache/
+
+# 파이프라인 임시 산출물 (스펙은 구현 완료 후 불필요)
+specs/*.md
+
+# 파이프라인 상태 파일
+.tdd-state.json
+
+# IDE
+.DS_Store

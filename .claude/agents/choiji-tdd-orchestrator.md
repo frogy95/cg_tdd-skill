@@ -27,6 +27,21 @@ tools:
 
 ---
 
+## 에이전트별 모델 지정
+
+| 단계 | 모델 | 이유 |
+|------|------|------|
+| spec | `opus` | 요구사항 분석, 엣지 케이스 도출에 깊은 사고 필요 |
+| red | `sonnet` | 명세→테스트 변환은 구조화된 작업 |
+| green | `sonnet` | 최소 구현, 빠른 코드 생성 |
+| refactor | `sonnet` | 코드 패턴 인식과 개선 |
+| verify | `haiku` | 도구 실행 결과 수집만 하므로 경량 모델 충분 |
+| commit | `haiku` | git 명령 실행만 하므로 경량 모델 충분 |
+
+Agent 도구 호출 시 `model` 파라미터로 위 모델을 지정한다.
+
+---
+
 ## 실행 절차
 
 ### 0. 시작
@@ -38,7 +53,7 @@ tools:
 
 ### 1단계: choiji-tdd-spec 에이전트 실행 [🛑 사용자 확인]
 
-**Agent 도구로 choiji-tdd-spec 에이전트를 호출한다.**
+**Agent 도구로 choiji-tdd-spec 에이전트를 호출한다. (`model: "opus"`)**
 
 prompt에 포함할 내용:
 ```
@@ -52,7 +67,7 @@ prompt에 포함할 내용:
 3. 확인을 받는다:
 
 ```
-✅ 명세 완료: specs/<feature-name>.md
+📋 명세 완료: specs/<feature-name>.md
 ─────────────────────────────────────
 [명세 주요 내용 요약]
 ─────────────────────────────────────
@@ -65,7 +80,7 @@ prompt에 포함할 내용:
 
 ### 2단계: choiji-tdd-red 에이전트 실행 [자동]
 
-**Agent 도구로 choiji-tdd-red 에이전트를 호출한다.**
+**Agent 도구로 choiji-tdd-red 에이전트를 호출한다. (`model: "sonnet"`)**
 
 prompt에 포함할 내용 (1단계에서 읽은 파일 내용 주입):
 ```
@@ -88,7 +103,7 @@ prompt에 포함할 내용 (1단계에서 읽은 파일 내용 주입):
 
 ### 3단계: choiji-tdd-green 에이전트 실행 [자동]
 
-**Agent 도구로 choiji-tdd-green 에이전트를 호출한다.**
+**Agent 도구로 choiji-tdd-green 에이전트를 호출한다. (`model: "sonnet"`)**
 
 prompt에 포함할 내용 (테스트 파일 내용 주입):
 ```
@@ -114,7 +129,7 @@ prompt에 포함할 내용 (테스트 파일 내용 주입):
 
 ### 4단계: choiji-tdd-refactor 에이전트 실행 [자동]
 
-**Agent 도구로 choiji-tdd-refactor 에이전트를 호출한다.**
+**Agent 도구로 choiji-tdd-refactor 에이전트를 호출한다. (`model: "sonnet"`)**
 
 prompt에 포함할 내용 (구현 파일 목록 주입):
 ```
@@ -128,14 +143,14 @@ prompt에 포함할 내용 (구현 파일 목록 주입):
 1. 반환된 `REFACTORED_FILES`와 `CHANGES`를 기록한다
 2. 진행 상황 출력:
 ```
-✨ Refactor 완료 → /verify 진행 중...
+🔧 Refactor 완료 → /verify 진행 중...
 ```
 
 ---
 
-### 5단계: choiji-tdd-verify 에이전트 실행 [자동, 실패 시 🛑]
+### 5단계: choiji-tdd-verify 에이전트 실행 [자동, 실패 시 재시도]
 
-**Agent 도구로 choiji-tdd-verify 에이전트를 호출한다.**
+**Agent 도구로 choiji-tdd-verify 에이전트를 호출한다. (`model: "haiku"`)**
 
 prompt에 포함할 내용:
 ```
@@ -146,11 +161,18 @@ prompt에 포함할 내용:
 - <REFACTORED_FILES>
 ```
 
+#### 에러 복구 루프 (최대 2회 자동 재시도)
+
 **통과 시**: 다음 단계로 진행한다.
 
-**실패 시**: 자동 진행을 멈추고 사용자에게 보고한다:
+**실패 시 (1~2회차)**: 실패 원인을 분석하여 해당 단계로 자동 복구한다:
+- 테스트 실패 → green 에이전트 재실행 (문제가 된 실패 테스트 목록 주입)
+- 린터/타입 오류 → refactor 에이전트 재실행 (오류 내용 주입)
+- 재시도 후 verify를 다시 실행한다
+
+**2회 재시도 후에도 실패 시**: 자동 진행을 멈추고 사용자에게 보고한다:
 ```
-❌ Verify 실패 — 자동 진행 중단
+❌ Verify 실패 — 자동 복구 불가 (2회 시도)
 ─────────────────────────────────────
 [DETAILS 내용]
 ─────────────────────────────────────
@@ -174,7 +196,7 @@ verify 통과 후, 명세의 Why/What을 바탕으로 커밋 메시지 초안을
 이 메시지로 커밋할까요? (Y/n/수정)
 ```
 
-승인 후 **Agent 도구로 choiji-tdd-commit 에이전트를 호출한다.**
+승인 후 **Agent 도구로 choiji-tdd-commit 에이전트를 호출한다. (`model: "haiku"`)**
 
 prompt에 포함할 내용:
 ```
@@ -193,7 +215,7 @@ prompt에 포함할 내용:
 ```
 🎉 파이프라인 완료
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-/spec ✅ → /red ✅ → /green ✅ → /refactor ✅ → /verify ✅ → /commit ✅
+📋 spec ✅ → 🔴 red ✅ → 🟢 green ✅ → 🔧 refactor ✅ → 🔍 verify ✅ → 📦 commit ✅
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 커밋: <COMMIT_HASH> — <COMMIT_MESSAGE>
 ```
