@@ -4,7 +4,7 @@ AI 네이티브 개발 프로세스를 정의하는 프로젝트.
 
 ## 개발 프로세스
 기능 개발 시 TDD 파이프라인을 따른다: `/spec → /red → /green → /refactor → /verify → /commit`
-파이프라인 상세 및 원칙: @.claude/agents/choiji-tdd-orchestrator.md
+파이프라인 실행: `/choiji-tdd-leader` 스킬 사용. 상세: @.claude/skills/choiji-tdd-leader.md
 
 ## 언어 규칙
 - 응답 언어: 한국어
