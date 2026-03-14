@@ -2,67 +2,50 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-# choiji-guide-3
+# choiji-tdd
 
-AI 네이티브 개발 프로세스를 정의하는 프로젝트. 실제 프로덕트 코드가 아니라 **TDD 기반 AI 에이전트 파이프라인 자체**가 이 프로젝트의 산출물이다.
+`choiji-tdd` Claude Code 플러그인을 개발하는 레포. 산출물은 마크다운 파일(스킬, 에이전트 정의)이며, 빌드/컴파일 단계는 없다.
 
-## 개발 프로세스
-
-기능 개발 시 TDD 파이프라인을 따른다:
+## 플러그인 구조
 
 ```
-/spec → /red → /green → /refactor → /verify → /commit
+choiji-tdd/                          # 플러그인 루트
+  .claude-plugin/plugin.json         # 플러그인 매니페스트
+  skills/choiji-tdd-leader/SKILL.md  # 오케스트레이터 스킬
+  agents/                            # 파이프라인 서브에이전트 6개
+.claude-plugin/marketplace.json      # 마켓플레이스 매니페스트
 ```
 
-파이프라인 전체 실행: `/choiji-tdd-leader` 스킬 사용 (`.claude/skills/choiji-tdd-leader.md` 참조)
+## 파일별 역할
 
-**중요**: 오케스트레이터(`choiji-tdd-leader`)는 각 단계를 직접 구현하지 않고, 반드시 `Agent` 도구를 통해 서브에이전트를 호출한다.
+- **`plugin.json`**: 플러그인 이름, 버전, 설명 메타데이터
+- **`SKILL.md`**: 사용자가 `/choiji-tdd:choiji-tdd-leader`로 호출하는 오케스트레이터. 각 단계를 `Agent` 도구로 서브에이전트에 위임한다
+- **`agents/choiji-tdd-*.md`**: 각 단계 전담 에이전트. frontmatter의 `tools`로 접근 가능한 도구를 제한한다
+- **`marketplace.json`**: 이 레포를 마켓플레이스로 사용할 때 플러그인 목록 정의
+
+## 에이전트 파일 규칙
+
+에이전트 파일은 frontmatter + 본문으로 구성된다:
+
+```markdown
+---
+name: choiji-tdd-<단계>
+description: >
+  한 줄 설명 (Claude가 에이전트를 선택하는 기준)
+tools:
+  - Read   # 필요한 도구만 명시 (최소 권한 원칙)
+---
+
+# 본문 (에이전트 지시사항)
+```
+
+`description`은 오케스트레이터가 `subagent_type`으로 호출할 때 사용되므로 정확하게 작성한다.
 
 ## 언어 규칙
 
 - 응답 언어: 한국어
-- 코드 주석: 한국어
 - 커밋 메시지: 한국어
-- 변수명/함수명: 영어 (코드 표준 준수)
-
-## 에이전트 시스템 구조
-
-### 파이프라인 에이전트 (`.claude/agents/`)
-
-| 에이전트 | 역할 | 핵심 제약 |
-|----------|------|-----------|
-| `choiji-tdd-spec` | 명세 작성 → `specs/<feature>.md` | 코드 작성 금지 |
-| `choiji-tdd-red` | 실패하는 테스트 작성 | 구현 코드 수정 금지 |
-| `choiji-tdd-green` | 테스트 통과하는 최소 구현 | 테스트 파일 수정 금지, 리팩토링 금지 |
-| `choiji-tdd-refactor` | 코드 품질 개선 | 동작 변경 금지, 신기능 추가 금지 |
-| `choiji-tdd-verify` | 테스트/타입/린터/빌드 전수 검증 | 판단은 도구에 맡김 |
-| `choiji-tdd-commit` | git 커밋 생성 | `specs/*.md` 스테이징 금지 |
-
-### 파일 컨벤션
-
-- 테스트: `src/<feature-name>/<feature-name>.test.ts`
-- 구현: `src/<feature-name>/<feature-name>.ts`
-- 명세: `specs/<feature-name>.md` (gitignore됨, 임시 산출물)
-
-## 검증 명령어
-
-프로젝트에 TypeScript + Jest 환경이 있을 때 사용하는 명령어:
-
-```bash
-npm test                    # 전체 테스트 실행
-npm test -- --testPathPattern=<feature>  # 특정 기능 테스트만 실행
-npx tsc --noEmit            # 타입 체크
-npm run lint                # 린터
-npm run build               # 빌드
-```
 
 ## 커밋 메시지 타입
 
-| 타입 | 용도 |
-|------|------|
-| `feat` | 새로운 기능 추가 |
-| `fix` | 버그 수정 |
-| `refactor` | 동작 변경 없는 코드 개선 |
-| `test` | 테스트 추가/수정 |
-| `docs` | 문서 변경 |
-| `chore` | 빌드, 설정 변경 |
+`feat` / `fix` / `refactor` / `docs` / `chore`

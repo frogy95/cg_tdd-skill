@@ -190,7 +190,7 @@ verify 통과 후, 명세의 Why/What을 바탕으로 커밋 메시지 초안을
 
   <본문 — 명세의 Why를 기반으로>
 
-  Pipeline: /choiji-tdd-leader
+  Pipeline: /choiji-tdd:choiji-tdd-leader
 ─────────────────────────────────────
 이 메시지로 커밋할까요? (Y/n/수정)
 ```

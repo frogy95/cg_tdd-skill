@@ -1,0 +1,10 @@
+{
+  "name": "choiji-tdd",
+  "version": "1.0.0",
+  "description": "TDD 기반 AI 에이전트 파이프라인. spec → red → green → refactor → verify → commit 순서로 기능을 개발한다.",
+  "author": {
+    "name": "choijiseon"
+  },
+  "repository": "https://github.com/frogy95/cg_tdd-skill",
+  "keywords": ["tdd", "testing", "pipeline", "agent"]
+}

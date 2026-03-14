@@ -1,0 +1,8 @@
+{
+  "plugins": {
+    "choiji-tdd": {
+      "path": "./choiji-tdd",
+      "description": "TDD 기반 AI 에이전트 파이프라인"
+    }
+  }
+}
