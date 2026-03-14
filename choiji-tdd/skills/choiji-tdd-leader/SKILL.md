@@ -28,12 +28,12 @@ description: >
 
 | 단계 | subagent_type | model | 이유 |
 |------|---------------|-------|------|
-| spec | `choiji-tdd-spec` | `opus` | 요구사항 분석, 엣지 케이스 도출에 깊은 사고 필요 |
-| red | `choiji-tdd-red` | `sonnet` | 명세→테스트 변환은 구조화된 작업 |
-| green | `choiji-tdd-green` | `sonnet` | 최소 구현, 빠른 코드 생성 |
-| refactor | `choiji-tdd-refactor` | `sonnet` | 코드 패턴 인식과 개선 |
-| verify | `choiji-tdd-verify` | `haiku` | 도구 실행 결과 수집만 하므로 경량 모델 충분 |
-| commit | `choiji-tdd-commit` | `haiku` | git 명령 실행만 하므로 경량 모델 충분 |
+| spec | `choiji-tdd:choiji-tdd-spec` | `opus` | 요구사항 분석, 엣지 케이스 도출에 깊은 사고 필요 |
+| red | `choiji-tdd:choiji-tdd-red` | `sonnet` | 명세→테스트 변환은 구조화된 작업 |
+| green | `choiji-tdd:choiji-tdd-green` | `sonnet` | 최소 구현, 빠른 코드 생성 |
+| refactor | `choiji-tdd:choiji-tdd-refactor` | `sonnet` | 코드 패턴 인식과 개선 |
+| verify | `choiji-tdd:choiji-tdd-verify` | `haiku` | 도구 실행 결과 수집만 하므로 경량 모델 충분 |
+| commit | `choiji-tdd:choiji-tdd-commit` | `haiku` | git 명령 실행만 하므로 경량 모델 충분 |
 
 Agent 도구 호출 시 `subagent_type`과 `model` 파라미터를 반드시 지정한다.
 
@@ -50,7 +50,7 @@ Agent 도구 호출 시 `subagent_type`과 `model` 파라미터를 반드시 지
 
 ### 1단계: choiji-tdd-spec 에이전트 실행 [🛑 사용자 확인]
 
-**Agent 도구로 choiji-tdd-spec 에이전트를 호출한다. (`subagent_type: "choiji-tdd-spec"`, `model: "opus"`)**
+**Agent 도구로 choiji-tdd-spec 에이전트를 호출한다. (`subagent_type: "choiji-tdd:choiji-tdd-spec"`, `model: "opus"`)**
 
 prompt에 포함할 내용:
 ```
@@ -77,7 +77,7 @@ prompt에 포함할 내용:
 
 ### 2단계: choiji-tdd-red 에이전트 실행 [자동]
 
-**Agent 도구로 choiji-tdd-red 에이전트를 호출한다. (`subagent_type: "choiji-tdd-red"`, `model: "sonnet"`)**
+**Agent 도구로 choiji-tdd-red 에이전트를 호출한다. (`subagent_type: "choiji-tdd:choiji-tdd-red"`, `model: "sonnet"`)**
 
 prompt에 포함할 내용 (1단계에서 읽은 파일 내용 주입):
 ```
@@ -100,7 +100,7 @@ prompt에 포함할 내용 (1단계에서 읽은 파일 내용 주입):
 
 ### 3단계: choiji-tdd-green 에이전트 실행 [자동]
 
-**Agent 도구로 choiji-tdd-green 에이전트를 호출한다. (`subagent_type: "choiji-tdd-green"`, `model: "sonnet"`)**
+**Agent 도구로 choiji-tdd-green 에이전트를 호출한다. (`subagent_type: "choiji-tdd:choiji-tdd-green"`, `model: "sonnet"`)**
 
 prompt에 포함할 내용 (테스트 파일 내용 주입):
 ```
@@ -126,7 +126,7 @@ prompt에 포함할 내용 (테스트 파일 내용 주입):
 
 ### 4단계: choiji-tdd-refactor 에이전트 실행 [자동]
 
-**Agent 도구로 choiji-tdd-refactor 에이전트를 호출한다. (`subagent_type: "choiji-tdd-refactor"`, `model: "sonnet"`)**
+**Agent 도구로 choiji-tdd-refactor 에이전트를 호출한다. (`subagent_type: "choiji-tdd:choiji-tdd-refactor"`, `model: "sonnet"`)**
 
 prompt에 포함할 내용 (구현 파일 목록 주입):
 ```
@@ -147,7 +147,7 @@ prompt에 포함할 내용 (구현 파일 목록 주입):
 
 ### 5단계: choiji-tdd-verify 에이전트 실행 [자동, 실패 시 재시도]
 
-**Agent 도구로 choiji-tdd-verify 에이전트를 호출한다. (`subagent_type: "choiji-tdd-verify"`, `model: "haiku"`)**
+**Agent 도구로 choiji-tdd-verify 에이전트를 호출한다. (`subagent_type: "choiji-tdd:choiji-tdd-verify"`, `model: "haiku"`)**
 
 prompt에 포함할 내용:
 ```
@@ -195,7 +195,7 @@ verify 통과 후, 명세의 Why/What을 바탕으로 커밋 메시지 초안을
 이 메시지로 커밋할까요? (Y/n/수정)
 ```
 
-승인 후 **Agent 도구로 choiji-tdd-commit 에이전트를 호출한다. (`subagent_type: "choiji-tdd-commit"`, `model: "haiku"`)**
+승인 후 **Agent 도구로 choiji-tdd-commit 에이전트를 호출한다. (`subagent_type: "choiji-tdd:choiji-tdd-commit"`, `model: "haiku"`)**
 
 prompt에 포함할 내용:
 ```
