@@ -1,8 +1,13 @@
 {
-  "plugins": {
-    "choiji-tdd": {
-      "path": "./choiji-tdd",
+  "name": "choiji-tdd",
+  "owner": {
+    "name": "choijiseon"
+  },
+  "plugins": [
+    {
+      "name": "choiji-tdd",
+      "source": "./choiji-tdd",
       "description": "TDD 기반 AI 에이전트 파이프라인"
     }
-  }
+  ]
 }
